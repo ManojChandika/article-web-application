@@ -1,7 +1,9 @@
 package com.example.articlewebapplication.controller;
 
 import com.example.articlewebapplication.dto.PostDto;
+import com.example.articlewebapplication.dto.PostResponse;
 import com.example.articlewebapplication.service.PostService;
+import com.example.articlewebapplication.util.PostConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +25,13 @@ public class PostController {
 
     //Get All Posts
     @GetMapping
-    public ResponseEntity<List<PostDto>> getAllPosts(){
-//        return new ResponseEntity<>(postService.getAllPosts(), HttpStatus.ACCEPTED);
-        return ResponseEntity.ok(postService.getAllPosts());
+    public PostResponse getAllPosts(
+            @RequestParam(value="pageNo", defaultValue = PostConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value="pageSize", defaultValue = PostConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = PostConstants.DEFAULT_SORT_BY,required = false ) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = PostConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
+    ){
+        return postService.getAllPosts(pageNo,pageSize,sortBy,sortDir);
     }
 
     // Get Post by Id

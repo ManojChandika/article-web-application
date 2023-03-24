@@ -1,11 +1,16 @@
 package com.example.articlewebapplication.service.serviceImp;
 
 import com.example.articlewebapplication.dto.PostDto;
+import com.example.articlewebapplication.dto.PostResponse;
 import com.example.articlewebapplication.entity.Post;
 import com.example.articlewebapplication.exception.ResourceNotFoundException;
 import com.example.articlewebapplication.repo.PostRepo;
 import com.example.articlewebapplication.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,11 +32,32 @@ public class postServiceImp implements PostService {
         // Convert Entity to Dto and return
         return mapToDto(post);
     }
+
     // Get all post rest API
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = postRepo.findAll();
-        return posts.stream().map(post ->mapToDto(post) ).collect(Collectors.toList());
+    public PostResponse getAllPosts(int pageNo , int pageSize, String sortBy, String sortDir) {
+
+        // Create sort Object
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())? Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+        // Create Pageable instance
+        Pageable pageable = PageRequest.of(pageNo,pageSize, sort);
+        Page<Post> posts = postRepo.findAll(pageable);
+        // Get content from Page Object
+
+        List<Post> listOfPost = posts.getContent();
+        List<PostDto> postDto = listOfPost.stream().map(post ->mapToDto(post) ).collect(Collectors.toList());
+
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setPostDto(postDto);
+        postResponse.setPageNo(posts.getNumber());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalElements(posts.getTotalElements());
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setLast(posts.isLast());
+
+        return postResponse;
+
     }
 
     // Get Post by Id
