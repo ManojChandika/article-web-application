@@ -7,17 +7,19 @@ import com.example.articlewebapplication.util.PostConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(value = "api/posts")
+@RequestMapping(value = "/api/posts")
 public class PostController {
     @Autowired
     private PostService postService;
 
     // Create blog post API
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto){
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
@@ -41,12 +43,14 @@ public class PostController {
     }
 
     // Update Post
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto,@PathVariable(name="id") Long id){
         return ResponseEntity.ok(postService.updatePost(postDto,id));
     }
 
     // Delete Post
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable(name="id") Long id){
         postService.deletePost(id);
