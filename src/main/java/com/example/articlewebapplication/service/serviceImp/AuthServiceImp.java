@@ -8,6 +8,7 @@ import com.example.articlewebapplication.exception.BlogApiException;
 import com.example.articlewebapplication.repo.RoleRepo;
 import com.example.articlewebapplication.repo.UserRepo;
 import com.example.articlewebapplication.service.AuthService;
+import com.example.articlewebapplication.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,8 @@ import java.util.Set;
 @Service
 public class AuthServiceImp implements AuthService {
     @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private UserRepo userRepo;
@@ -35,10 +38,10 @@ public class AuthServiceImp implements AuthService {
     public String login(AuthDto authDto) {
         Authentication authentication=authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authDto.getUserNameOrEmail(),authDto.getPassword()));
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtUtil.generateToken(authentication);
 
-        return "User Login success!";
+        return token;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.articlewebapplication.controller;
 
 import com.example.articlewebapplication.dto.AuthDto;
+import com.example.articlewebapplication.dto.JwtResponse;
 import com.example.articlewebapplication.dto.RegisterDto;
 import com.example.articlewebapplication.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,13 @@ public class AuthController {
 
     // Build login Rest API
     @PostMapping(value = {"/login", "/signin"})
-    public ResponseEntity<String> login(@RequestBody AuthDto authDto){
-        return ResponseEntity.ok(authService.login(authDto));
+    public ResponseEntity<JwtResponse> login(@RequestBody AuthDto authDto){
+
+        String token =authService.login(authDto);
+        JwtResponse jwtResponse = new JwtResponse();
+        jwtResponse.setAccessToken(token);
+
+        return ResponseEntity.ok(jwtResponse);
     }
 
     // Build Register Rest API
