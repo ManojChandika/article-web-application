@@ -31,4 +31,7 @@ public class Post {
             orphanRemoval = true
     )
     private Set<Comment> comments= new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 }
